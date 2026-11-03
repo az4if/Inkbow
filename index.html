@@ -50,111 +50,190 @@ pre,output{display:block}
 #out{width:100%;min-height:150px;font:13px/1.55 'JetBrains Mono',monospace}
 .meta{color:var(--mute);font-size:.85rem;margin:6px 0 0}
 .hide{display:none}
+#inner{max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.25}
+.hud{position:relative;height:34px;border-radius:10px;border:1px solid var(--line);margin:4px 0 24px}
+.hud i{position:absolute;top:100%;width:14px;height:14px;margin:4px 0 0 -7px;border-radius:50%;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--mute)}
+.rng{display:grid;grid-template-columns:100px 1fr 38px;gap:8px;align-items:center;margin-bottom:6px;font-size:.9rem}
+.rng input{width:100%;accent-color:var(--acc)}
+input[type=number]{font:inherit;color:inherit;background:var(--code);border:1px solid var(--line);border-radius:8px;padding:6px 8px;width:64px}
+#stops:not([data-fx=gradient]):not([data-fx=mirror]):not([data-fx=wave]) .pos{display:none}
+body{background:radial-gradient(900px 420px at 85% -10%,color-mix(in srgb,var(--acc) 16%,transparent),transparent) fixed,var(--bg)}
+.card{box-shadow:0 1px 2px rgba(20,10,60,.05),0 10px 28px -14px rgba(20,10,60,.18)}
+.card h2{display:flex;align-items:center;gap:9px}
+.card h2 i{display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:color-mix(in srgb,var(--acc) 14%,transparent);color:var(--acc)}
+.ic{width:16px;height:16px;flex:none}
+button .ic{width:15px;height:15px;vertical-align:-3px;margin-right:6px}
+button:only-child .ic:only-child,.stop button .ic{margin:0}
+button,.chips span{transition:border-color .15s,transform .1s,background .15s}
+button:active{transform:translateY(1px)}
+.presets button:hover{transform:scale(1.06)}
+.logo{display:flex;align-items:center;gap:12px}.tag{color:var(--mute);font-size:.85rem;margin-top:-2px}
+#theme{display:grid;place-items:center;width:38px;height:38px;padding:0;border-radius:12px}#theme .ic{margin:0;width:18px;height:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stage{min-height:180px}
+footer{border-top:1px solid var(--line);margin-top:8px;padding-top:16px}
 </style>
 </head>
 <body>
-<header><h1 class="brand">Inkbow</h1><button id="theme" aria-label="Toggle theme">Theme</button></header>
+<header><div class="logo"><svg width="38" height="38" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg"><stop offset="0" stop-color="#FF512F"/><stop offset=".5" stop-color="#DD2476"/><stop offset="1" stop-color="#5B3DF5"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lg)"/><circle cx="32" cy="18" r="5" fill="#fff"/><rect x="27.5" y="27" width="9" height="22" rx="4.5" fill="#fff"/></svg><div><h1 class="brand">Inkbow</h1><div class="tag">Paint your text with color</div></div></div><button id="theme" aria-label="Toggle theme"></button></header>
 <main>
 <section>
-  <div class="card"><h2>Your text</h2><textarea id="text" spellcheck="false"></textarea>
+  <div class="card"><h2><i data-ic="pen"></i>Your text</h2><textarea id="text" spellcheck="false"></textarea>
     <div class="row"><label><input type="checkbox" id="perWord"> Color per word</label><label><input type="checkbox" id="opt" checked> Merge identical colors</label></div></div>
-  <div class="card"><h2>Color effect</h2><div class="chips" id="effects"></div>
-    <div id="stopsBox" style="margin-top:14px"><div id="stops"></div><div class="row" style="margin-top:0"><button id="add">+ Add color</button><button id="rev">Reverse</button></div>
-    <div class="presets" id="presets" aria-label="Presets"></div></div>
-    <div class="row hide" id="rerollBox"><button id="reroll" class="p">Shuffle colors</button></div></div>
-  <div class="card"><h2>Text style</h2>
-    <div class="row" style="margin-top:0"><select id="font" aria-label="Font"></select><select id="size" aria-label="Size"></select></div>
+  <div class="card"><h2><i data-ic="sparkles"></i>Color effect</h2><div class="chips" id="effects"></div>
+    <div id="stopsBox" style="margin-top:14px"><div class="hud" id="hud"></div><div id="stops" data-fx="gradient"></div><div class="row" style="margin-top:0"><button id="add"><i data-ic="plus"></i>Add color</button><button id="rev"><i data-ic="swap"></i>Reverse</button></div>
+    <div class="presets" id="presets" aria-label="Presets"></div><div class="row" id="harm"><button data-h="comp">Complementary</button><button data-h="ana">Analogous</button><button data-h="tri">Triadic</button><button data-h="rand" class="p"><i data-ic="shuffle"></i>Random palette</button></div></div>
+    <div class="row hide" id="repBox"><label>Repeat <input type="number" id="rep" min="1" max="12"> times back and forth</label></div><div class="row hide" id="rerollBox"><button id="reroll" class="p"><i data-ic="shuffle"></i>Shuffle colors</button></div></div>
+  <div class="card"><h2><i data-ic="type"></i>Text style</h2>
+    <div class="grid2"><select id="font" aria-label="Font"></select><select id="size" aria-label="Size"></select><select id="ls" aria-label="Letter spacing"></select><select id="cs" aria-label="Letter case"></select><select id="uni" aria-label="Unicode font style" style="grid-column:1/-1"></select></div>
     <div class="chips" style="margin-top:10px" id="styles"></div></div>
+  <div class="card"><h2><i data-ic="sliders"></i>Color adjust</h2>
+    <label class="rng">Hue shift<input type="range" id="a_h" min="-180" max="180"><output id="o_h"></output></label>
+    <label class="rng">Saturation<input type="range" id="a_sa" min="-100" max="100"><output id="o_sa"></output></label>
+    <label class="rng">Lightness<input type="range" id="a_li" min="-50" max="50"><output id="o_li"></output></label>
+    <button id="rst"><i data-ic="swap"></i>Reset</button></div>
 </section>
 <section class="sticky">
-  <div class="card"><h2>Preview</h2><div class="stage" id="stage"></div>
+  <div class="card"><h2><i data-ic="eye"></i>Preview</h2><div class="stage" id="stage"></div>
     <div class="chips" style="margin-top:10px" id="bgs"></div></div>
-  <div class="card"><h2>Code</h2><div class="chips tabs" id="fmts"></div>
+  <div class="card"><h2><i data-ic="code"></i>Code</h2><div class="chips tabs" id="fmts"></div>
     <textarea id="out" readonly aria-label="Generated code"></textarea>
-    <div class="row"><button class="p" id="copy">Copy code</button><button id="share">Copy share link</button><span class="meta" id="meta"></span></div></div>
+    <div class="row"><button class="p" id="copy"><i data-ic="copy"></i>Copy code</button><button id="rich"><i data-ic="clip"></i>Copy rich text</button><button id="share"><i data-ic="share"></i>Copy share link</button><span class="meta" id="meta"></span></div></div>
 </section>
 </main>
 <footer>Made by <b>AziF</b> · MIT licensed · Inkbow turns plain text into colored text for forums, sites, terminals and games.</footer>
 <script>
 const $=s=>document.querySelector(s);
-const EFFECTS={gradient:'Gradient',mirror:'Middle gradient',alt:'Alternating',solid:'Solid',random:'Random',rainbow:'Rainbow'};
-const FORMATS={bbcode:'BBCode',html:'HTML',css:'CSS gradient',ansi:'ANSI terminal',mc:'Minecraft'};
+const EFFECTS={gradient:'Gradient',mirror:'Middle gradient',wave:'Repeating wave',alt:'Alternating',line:'Per line',solid:'Solid',random:'Random',rainbow:'Rainbow'};
+const FORMATS={bbcode:'BBCode',html:'HTML span',font:'HTML font tag',css:'CSS gradient',unity:'Unity / TMP',mini:'MiniMessage',minigrad:'MiniMessage gradient',mc:'Minecraft &#hex',mcjson:'Minecraft JSON',discord:'Discord ANSI',ansi:'ANSI terminal',latex:'LaTeX'};
+const ICONS={pen:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',sparkles:'<path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/>',type:'<polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/>',sliders:'<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',code:'<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',clip:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>',plus:'<path d="M12 5v14M5 12h14"/>',shuffle:'<path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',swap:'<path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/>',x:'<path d="M18 6 6 18M6 6l12 12"/>',check:'<path d="M20 6 9 17l-5-5"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/>',pipette:'<path d="m2 22 1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3z"/>'};
+const ic=n=>`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
+const CASES={'':'Normal case',upper:'UPPERCASE',lower:'lowercase',title:'Title Case',alt:'aLtErNaTiNg',rev:'Reversed'};
+const UNIS={'':'Normal font',bold:'Bold',italic:'Italic',bolditalic:'Bold italic',script:'Script',boldscript:'Bold script',fraktur:'Fraktur',double:'Double-struck',sans:'Sans',sansbold:'Sans bold',sansitalic:'Sans italic',mono:'Monospace',circled:'Circled',wide:'Wide',smallcaps:'Small caps'};
+const UB={bold:[0x1D400,0x1D41A,0x1D7CE],italic:[0x1D434,0x1D44E],bolditalic:[0x1D468,0x1D482],script:[0x1D49C,0x1D4B6],boldscript:[0x1D4D0,0x1D4EA],fraktur:[0x1D504,0x1D51E],double:[0x1D538,0x1D552,0x1D7D8],sans:[0x1D5A0,0x1D5BA,0x1D7E2],sansbold:[0x1D5D4,0x1D5EE,0x1D7EC],sansitalic:[0x1D608,0x1D622],mono:[0x1D670,0x1D68A,0x1D7F6]};
+const EX={italic:{h:'ℎ'},script:{B:'ℬ',E:'ℰ',F:'ℱ',H:'ℋ',I:'ℐ',L:'ℒ',M:'ℳ',R:'ℛ',e:'ℯ',g:'ℊ',o:'ℴ'},fraktur:{C:'ℭ',H:'ℌ',I:'ℑ',R:'ℜ',Z:'ℨ'},double:{C:'ℂ',H:'ℍ',N:'ℕ',P:'ℙ',Q:'ℚ',R:'ℝ',Z:'ℤ'}};
+const cp=c=>String.fromCodePoint(c);
+function uni(s,k){if(!k)return s;return Array.from(s).map(c=>{const o=c.charCodeAt(0),U=c>='A'&&c<='Z',L=c>='a'&&c<='z',D=c>='0'&&c<='9';
+ if(k=='circled')return U?cp(0x24B6+o-65):L?cp(0x24D0+o-97):c>='1'&&c<='9'?cp(0x2460+o-49):c=='0'?'⓪':c;
+ if(k=='wide')return o>32&&o<127?cp(0xFF01+o-33):c==' '?'\u3000':c;
+ if(k=='smallcaps')return L?'ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀꜱᴛᴜᴠᴡxʏᴢ'[o-97]:c;
+ const b=UB[k];if(EX[k]&&EX[k][c])return EX[k][c];return U?cp(b[0]+o-65):L?cp(b[1]+o-97):D&&b[2]?cp(b[2]+o-48):c}).join('')}
+const cas=(s,k)=>k=='upper'?s.toUpperCase():k=='lower'?s.toLowerCase():k=='title'?s.toLowerCase().replace(/(^|\s)\S/g,m=>m.toUpperCase()):k=='alt'?Array.from(s).map((c,i)=>i%2?c.toLowerCase():c.toUpperCase()).join(''):k=='rev'?Array.from(s).reverse().join(''):s;
+const txt=()=>{let s=uni(cas(S.text,S.cs),S.uni);if(S.sp)s=Array.from(s).map(c=>/\s/.test(c)?c:c+'\u2009').join('');return s};
+const SMOOTH=['gradient','mirror','rainbow','wave'],HT=[['s','<s>','</s>'],['u','<u>','</u>'],['i','<i>','</i>'],['b','<b>','</b>']];
+const DC=[['30','#4F545C'],['31','#DC322F'],['32','#859900'],['33','#B58900'],['34','#268BD2'],['35','#D33682'],['36','#2AA198'],['37','#FFFFFF']];
 const FONTS=['','Arial','Verdana','Georgia','Times New Roman','Courier New','Trebuchet MS','Comic Sans MS','Impact'];
 const SIZES=['','12','16','24','32','48','64'];
 const BGS={auto:'Theme',light:'Light',dark:'Dark',check:'Transparent'};
-const PRESETS={Sunset:['#FF512F','#F09819','#DD2476'],Ocean:['#00C6FF','#0072FF'],Neon:['#F72585','#7209B7','#4CC9F0'],Forest:['#11998E','#38EF7D'],Candy:['#FF9A9E','#FECFEF','#A18CD1'],Fire:['#F83600','#F9D423'],Mono:['#111111','#999999']};
-const S={text:'Hello world!',effect:'gradient',stops:['#FF0000','#0000FF'],perWord:false,opt:true,font:'',size:'',b:0,i:0,u:0,s:0,fmt:'bbcode',bg:'auto',seed:7};
+const PRESETS={Sunset:['#FF512F','#F09819','#DD2476'],Ocean:['#00C6FF','#0072FF'],Neon:['#F72585','#7209B7','#4CC9F0'],Forest:['#11998E','#38EF7D'],Candy:['#FF9A9E','#FECFEF','#A18CD1'],Fire:['#F83600','#F9D423'],Mono:['#111111','#999999'],Aurora:['#00F5A0','#00D9F5','#7B2FF7'],Vaporwave:['#FF71CE','#B967FF','#01CDFE'],Peach:['#FFECD2','#FCB69F'],Lava:['#4B0000','#FF0000','#FFA500','#FFFF00'],Ice:['#E0F7FF','#74EBD5','#9FACE6'],Gold:['#B8860B','#FFD700','#FFF8DC'],Cyber:['#FF00C8','#00FFEA'],Mint:['#A8FF78','#78FFD6'],Berry:['#8E2DE2','#4A00E0'],Cotton:['#FFC3A0','#FFAFBD','#C9FFBF'],Sakura:['#FFDDE1','#EE9CA7'],Midnight:['#232526','#414345','#6A82FB'],Toxic:['#CCFF00','#00FF66'],Rose:['#FF0844','#FFB199'],Royal:['#141E30','#243B55','#4AA3FF'],Rainbow:['#E40303','#FF8C00','#FFED00','#008026','#004DFF','#750787'],Dusk:['#2C3E50','#FD746C']};
+const S={text:'Hello world!',effect:'gradient',stops:['#FF0000','#0000FF'],perWord:false,opt:true,font:'',size:'',b:0,i:0,u:0,s:0,fmt:'bbcode',bg:'auto',seed:7,cs:'',uni:'',ls:0,g:0,sp:0,pos:[],rep:3,h:0,sa:0,li:0};
 const h2r=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
 const r2h=a=>'#'+a.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('').toUpperCase();
-function sample(st,t){if(st.length==1)return st[0];const x=t*(st.length-1),i=Math.min(Math.floor(x),st.length-2),f=x-i,a=h2r(st[i]),b=h2r(st[i+1]);return r2h(a.map((v,k)=>v+(b[k]-v)*f))}
-function hsl(h,s,l){h%=360;const a=s*Math.min(l,1-l),f=n=>{const k=(n+h/30)%12;return l-a*Math.max(-1,Math.min(k-3,9-k,1))};return r2h([f(0)*255,f(8)*255,f(4)*255])}
+function sample(st,t){if(st.length==1)return st[0];const p=posOf();let i=0;while(i<st.length-2&&t>p[i+1])i++;const f=Math.max(0,Math.min(1,(t-p[i])/((p[i+1]-p[i])||1))),a=h2r(st[i]),b=h2r(st[i+1]);return r2h(a.map((v,k)=>v+(b[k]-v)*f))}
+const posOf=()=>{const n=S.stops.length,p=S.pos.length==n?[...S.pos]:S.stops.map((_,i)=>n>1?i/(n-1):0);for(let i=1;i<n;i++)p[i]=Math.max(p[i],p[i-1]);return p};
+function r2hsl(h){const[r,g,b]=h2r(h).map(v=>v/255),m=Math.max(r,g,b),n=Math.min(r,g,b),l=(m+n)/2,d=m-n;let H=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));H=m==r?((g-b)/d)%6:m==g?(b-r)/d+2:(r-g)/d+4;H=(H*60+360)%360}return[H,s,l]}
+const clamp=v=>Math.min(1,Math.max(0,v));
+function adj(c){if(!S.h&&!S.sa&&!S.li)return c;const[H,s,l]=r2hsl(c);return hsl(H+S.h,clamp(s+S.sa/100),clamp(l+S.li/100))}
+const rampAt=t=>adj(S.effect=='rainbow'?hsl(t*360,1,.5):colorAt(0,2,t));
+const near=c=>{const a=h2r(c);let b=DC[0],d=1e9;for(const x of DC){const q=h2r(x[1]),e=(a[0]-q[0])**2+(a[1]-q[1])**2+(a[2]-q[2])**2;if(e<d){d=e;b=x}}return b[0]};
+const lx=s=>s.replace(/[\\{}&%$#_^~]/g,m=>m=='\\'?'\\textbackslash{}':m=='^'?'\\^{}':m=='~'?'\\~{}':'\\'+m).replace(/\n/g,'\\\\ ');
+function hsl(h,s,l){h=(h%360+360)%360;const a=s*Math.min(l,1-l),f=n=>{const k=(n+h/30)%12;return l-a*Math.max(-1,Math.min(k-3,9-k,1))};return r2h([f(0)*255,f(8)*255,f(4)*255])}
 function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function colorAt(k,n,t){const st=S.stops;switch(S.effect){
  case'gradient':return sample(st,t);
  case'mirror':return sample(st,1-Math.abs(2*t-1));
+ case'wave':{const p=(t*S.rep)%2;return sample(st,p<=1?p:2-p)}
  case'alt':return st[k%st.length];
  case'solid':return st[0];
  case'rainbow':return hsl(n>1?k/n*360:0,1,.5);
  case'random':return S.rnd[k]||(S.rnd[k]=hsl(S.r()*360,.85,.5))}}
 function runs(){
- const ch=Array.from(S.text),ws=c=>/\s/.test(c);let n=0,prev=false;
+ const ch=Array.from(txt()),ws=c=>/\s/.test(c);let n=0,prev=false;
  ch.forEach(c=>{if(!ws(c)){if(!(S.perWord&&prev))n++;prev=true}else prev=false});
  S.r=rng(S.seed);S.rnd=[];
- let k=-1;prev=false;const out=[];
+ let k=-1,ln=0;prev=false;const out=[];
  for(const c of ch){
-  if(ws(c)){prev=false;if(S.opt&&out.length&&out[out.length-1].c)out[out.length-1].t+=c;else out.push({t:c,c:null});continue}
+  if(ws(c)){prev=false;if(c=='\n')ln++;if(S.opt&&out.length&&out[out.length-1].c)out[out.length-1].t+=c;else out.push({t:c,c:null});continue}
   if(!(S.perWord&&prev))k++;prev=true;
-  const col=colorAt(k,n,n>1?k/(n-1):0),l=out[out.length-1];
+  const col=adj(S.effect=='line'?S.stops[ln%S.stops.length]:colorAt(k,n,n>1?k/(n-1):0)),l=out[out.length-1];
   if(S.opt&&l&&(l.c===col))l.t+=c;else if(S.opt&&l&&!l.c&&/^\s+$/.test(l.t)&&out.length>1&&out[out.length-2].c===col){out[out.length-2].t+=l.t+c;out.pop()}else out.push({t:c,c:col})}
  return out}
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-function styleCss(){let c='';if(S.font)c+=`font-family:${S.font};`;if(S.size)c+=`font-size:${S.size}px;`;if(S.b)c+='font-weight:bold;';if(S.i)c+='font-style:italic;';const d=[S.u&&'underline',S.s&&'line-through'].filter(Boolean).join(' ');if(d)c+=`text-decoration:${d};`;return c}
+function styleCss(){let c='';if(S.font)c+=`font-family:${S.font};`;if(S.size)c+=`font-size:${S.size}px;`;if(S.ls)c+=`letter-spacing:${S.ls}px;`;if(S.b)c+='font-weight:bold;';if(S.i)c+='font-style:italic;';const d=[S.u&&'underline',S.s&&'line-through'].filter(Boolean).join(' ');if(d)c+=`text-decoration:${d};`;return c}
 function gen(r){
- const f=S.fmt;
+ const f=S.fmt,wr=(o,t)=>{for(const[k,a,b]of t)if(S[k])o=a+o+b;return o},br=s=>esc(s).replace(/\n/g,'<br>');
  if(f=='bbcode'){let o=r.map(x=>x.c?`[color=${x.c}]${x.t}[/color]`:x.t).join('');
   if(S.s)o=`[s]${o}[/s]`;if(S.u)o=`[u]${o}[/u]`;if(S.i)o=`[i]${o}[/i]`;if(S.b)o=`[b]${o}[/b]`;
   if(S.size)o=`[size=${S.size}]${o}[/size]`;if(S.font)o=`[font=${S.font}]${o}[/font]`;return o}
- if(f=='html'){let o=r.map(x=>{const t=esc(x.t).replace(/\n/g,'<br>');return x.c?`<span style="color:${x.c};">${t}</span>`:t}).join('');const c=styleCss();return c?`<span style="${c}">${o}</span>`:o}
- if(f=='css'){if(!['gradient','mirror','rainbow'].includes(S.effect))return'/* The CSS gradient export needs a smooth effect: Gradient, Middle gradient or Rainbow. */';
-  const pts=S.effect=='rainbow'?[0,1,2,3,4,5,6].map(i=>hsl(i*60,1,.5)):S.effect=='mirror'?[...S.stops,...[...S.stops].reverse().slice(1)]:S.stops;
-  return `<span style="background:linear-gradient(90deg,${pts.join(',')});-webkit-background-clip:text;background-clip:text;color:transparent;${styleCss()}">${esc(S.text).replace(/\n/g,'<br>')}</span>`}
+ if(f=='html'){let o=r.map(x=>{const t=esc(x.t).replace(/\n/g,'<br>');return x.c?`<span style="color:${x.c};${S.g?`text-shadow:0 0 .35em ${x.c};`:''}">${t}</span>`:t}).join('');const c=styleCss();return c?`<span style="${c}">${o}</span>`:o}
+ if(f=='font')return wr(r.map(x=>x.c?`<font color="${x.c}">${br(x.t)}</font>`:br(x.t)).join(''),HT);
+ if(f=='unity')return wr(r.map(x=>x.c?`<color=${x.c}>${x.t}</color>`:x.t).join(''),HT);
+ const MM=[['s','<strikethrough>','</strikethrough>'],['u','<underlined>','</underlined>'],['i','<italic>','</italic>'],['b','<bold>','</bold>']];
+ if(f=='mini')return wr(r.map(x=>x.c?`<${x.c}>${x.t}`:x.t).join(''),MM);
+ if(f=='minigrad'){if(!SMOOTH.includes(S.effect))return'# MiniMessage gradient needs a smooth effect: Gradient, Middle gradient, Repeating wave or Rainbow.';return wr(`<gradient:${[0,1,2,3,4,5,6,7,8].map(i=>rampAt(i/8)).join(':')}>${txt()}</gradient>`,MM)}
+ if(f=='latex')return wr(r.map(x=>{const t=lx(x.t);return x.c?`\\textcolor[HTML]{${x.c.slice(1)}}{${t}}`:t}).join(''),[['s','\\sout{','}'],['u','\\underline{','}'],['i','\\textit{','}'],['b','\\textbf{','}']]);
+ if(f=='mcjson')return JSON.stringify(['',...r.filter(x=>x.t).map(x=>{const o={text:x.t};if(x.c)o.color=x.c.toLowerCase();if(S.b)o.bold=true;if(S.i)o.italic=true;if(S.u)o.underlined=true;if(S.s)o.strikethrough=true;return o})]);
+ if(f=='discord')return '```ansi\n'+r.map(x=>x.c?`\x1b[${S.b?'1;':''}${S.u?'4;':''}${near(x.c)}m${x.t}`:x.t).join('')+'\x1b[0m\n```';
+ if(f=='css'){if(!SMOOTH.includes(S.effect))return'/* The CSS gradient export needs a smooth effect: Gradient, Middle gradient, Repeating wave or Rainbow. */';
+  const pts=Array.from({length:33},(_,i)=>rampAt(i/32));
+  return `<span style="background:linear-gradient(90deg,${pts.join(',')});-webkit-background-clip:text;background-clip:text;color:transparent;${styleCss()}">${esc(txt()).replace(/\n/g,'<br>')}</span>`}
  if(f=='ansi')return r.map(x=>x.c?x.t.replace(/\n/g,'\n').split('').map(c=>{const[a,b,d]=h2r(x.c);return c=='\n'?c:`\\x1b[${S.b?'1;':''}${S.i?'3;':''}${S.u?'4;':''}38;2;${a};${b};${d}m${c}\\x1b[0m`}).join(''):x.t).join('');
  return r.map(x=>x.c?Array.from(x.t).map(c=>`&#${x.c.slice(1)}${S.b?'&l':''}${S.i?'&o':''}${S.u?'&n':''}${S.s?'&m':''}${c}`).join(''):x.t).join('')}
 function render(){
  const r=runs();$('#out').value=gen(r);
- $('#stage').innerHTML=r.map(x=>{const t=esc(x.t);return x.c?`<span style="color:${x.c}">${t}</span>`:t}).join('')||'<span style="opacity:.4">Type something…</span>';
- $('#stage').style.cssText=styleCss();$('#stage').className='stage '+(S.bg=='auto'?'':S.bg);
+ $('#stage').innerHTML='<div id="inner">'+(r.map(x=>{const t=esc(x.t);return x.c?`<span style="color:${x.c}${S.g?`;text-shadow:0 0 .35em ${x.c}`:''}">${t}</span>`:t}).join('')||'<span style="opacity:.4">Type something…</span>')+'</div>';
+ $('#inner').style.cssText=styleCss();$('#stage').className='stage '+(S.bg=='auto'?'':S.bg);
  $('#meta').textContent=`${Array.from(S.text).length} chars · ${$('#out').value.length} code chars`;
  $('#stopsBox').classList.toggle('hide',['random','rainbow'].includes(S.effect));
  $('#rerollBox').classList.toggle('hide',S.effect!='random');
  $('#add').classList.toggle('hide',S.effect=='solid');
- try{history.replaceState(null,'','#'+btoa(unescape(encodeURIComponent(JSON.stringify(S,['text','effect','stops','perWord','opt','font','size','b','i','u','s','fmt','bg','seed'])))))}catch(e){}}
+ $('#repBox').classList.toggle('hide',S.effect!='wave');$('#stops').dataset.fx=S.effect;drawHud();
+ [['h','o_h'],['sa','o_sa'],['li','o_li']].forEach(([k,id])=>$('#'+id).textContent=S[k]);
+ try{history.replaceState(null,'','#'+btoa(unescape(encodeURIComponent(JSON.stringify(S,['text','effect','stops','perWord','opt','font','size','b','i','u','s','fmt','bg','seed','cs','uni','ls','g','sp','pos','rep','h','sa','li'])))))}catch(e){}}
 function chips(el,name,map,key){$(el).innerHTML=Object.entries(map).map(([v,l])=>`<label><input type="radio" name="${name}" value="${v}"${S[key]==v?' checked':''}><span>${l}</span></label>`).join('');
  $(el).onchange=e=>{S[key]=e.target.value;render()}}
-function drawStops(){
- $('#stops').innerHTML=S.stops.map((c,i)=>`<div class="stop"><input type="color" value="${c}" data-i="${i}" aria-label="Color ${i+1}"><input type="text" value="${c}" data-i="${i}" maxlength="7" aria-label="Hex ${i+1}">${S.stops.length>2&&S.effect!='solid'?`<button data-x="${i}" aria-label="Remove">✕</button>`:''}</div>`).join('');
- $('#stops').querySelectorAll('input').forEach(el=>el.oninput=()=>{const v=el.value;if(/^#[0-9a-f]{6}$/i.test(v)){S.stops[el.dataset.i]=v.toUpperCase();el.parentNode.querySelectorAll('input').forEach(o=>{if(o!==el)o.value=v});render()}});
- $('#stops').querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{S.stops.splice(b.dataset.x,1);drawStops();render()})}
+function drawHud(){const st=S.stops,p=posOf(),hard=['alt','solid','line'].includes(S.effect),s2=S.effect=='solid'?[st[0]]:st;
+ $('#hud').style.background='linear-gradient(90deg,'+(hard?s2.map((c,i)=>`${adj(c)} ${i/s2.length*100}% ${(i+1)/s2.length*100}%`).join(','):Array.from({length:33},(_,i)=>rampAt(i/32)).join(','))+')';
+ $('#hud').innerHTML=['gradient','wave'].includes(S.effect)?st.map((c,i)=>`<i style="left:${p[i]*100}%;background:${c}"></i>`).join(''):''}
+function drawStops(){const p=posOf(),q=$('#stops');
+ q.innerHTML=S.stops.map((c,i)=>`<div class="stop"><input type="color" value="${c}" data-i="${i}" aria-label="Color ${i+1}"><input type="text" data-i="${i}" value="${c}" maxlength="7" aria-label="Hex ${i+1}"><input class="pos" type="number" min="0" max="100" data-p="${i}" value="${Math.round(p[i]*100)}" aria-label="Position ${i+1} percent" title="Position %">${'EyeDropper' in window?`<button data-e="${i}" title="Pick from screen" aria-label="Eyedropper">${ic('pipette')}</button>`:''}${S.stops.length>2?`<button data-x="${i}" aria-label="Remove">${ic('x')}</button>`:''}</div>`).join('');
+ q.querySelectorAll('[data-i]').forEach(el=>el.oninput=()=>{const v=el.value;if(/^#[0-9a-f]{6}$/i.test(v)){S.stops[el.dataset.i]=v.toUpperCase();el.parentNode.querySelectorAll('[data-i]').forEach(o=>{if(o!==el)o.value=v});render()}});
+ q.querySelectorAll('[data-p]').forEach(el=>el.oninput=()=>{if(S.pos.length!=S.stops.length)S.pos=posOf();S.pos[el.dataset.p]=Math.max(0,Math.min(100,+el.value||0))/100;render()});
+ q.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{S.stops.splice(b.dataset.x,1);S.pos=[];drawStops();render()});
+ q.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>new EyeDropper().open().then(r=>{S.stops[b.dataset.e]=r.sRGBHex.toUpperCase();drawStops();render()}).catch(()=>{}))}
 function init(){
  try{Object.assign(S,JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(1))))))}catch(e){}
  $('#text').value=S.text;$('#perWord').checked=S.perWord;$('#opt').checked=S.opt;
  $('#font').innerHTML=FONTS.map(f=>`<option value="${f}">${f||'Default font'}</option>`).join('');$('#font').value=S.font;
  $('#size').innerHTML=SIZES.map(f=>`<option value="${f}">${f?f+' px':'Default size'}</option>`).join('');$('#size').value=S.size;
- $('#styles').innerHTML=[['b','Bold'],['i','Italic'],['u','Underline'],['s','Strikethrough']].map(([k,l])=>`<label><input type="checkbox" data-k="${k}"${S[k]?' checked':''}><span>${l}</span></label>`).join('');
+ $('#styles').innerHTML=[['b','Bold'],['i','Italic'],['u','Underline'],['s','Strikethrough'],['g','Glow'],['sp','Spaced out']].map(([k,l])=>`<label><input type="checkbox" data-k="${k}"${S[k]?' checked':''}><span>${l}</span></label>`).join('');
  $('#styles').onchange=e=>{S[e.target.dataset.k]=e.target.checked?1:0;render()};
  chips('#effects','fx',EFFECTS,'effect');chips('#fmts','fm',FORMATS,'fmt');chips('#bgs','bg',BGS,'bg');
  $('#presets').innerHTML=Object.entries(PRESETS).map(([n,c])=>`<button title="${n}" aria-label="${n}" style="background:linear-gradient(90deg,${c})"></button>`).join('');
- $('#presets').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.stops=[...PRESETS[b.title]];if(S.effect=='random'||S.effect=='rainbow'||S.effect=='solid'){S.effect='gradient';chips('#effects','fx',EFFECTS,'effect')}drawStops();render()};
+ $('#presets').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.stops=[...PRESETS[b.title]];S.pos=[];if(S.effect=='random'||S.effect=='rainbow'||S.effect=='solid'){S.effect='gradient';chips('#effects','fx',EFFECTS,'effect')}drawStops();render()};
  $('#text').oninput=e=>{S.text=e.target.value;render()};
  $('#perWord').onchange=e=>{S.perWord=e.target.checked;render()};$('#opt').onchange=e=>{S.opt=e.target.checked;render()};
+ $('#ls').innerHTML=[0,1,2,4,8].map(v=>`<option value="${v}">${v?v+' px spacing':'Normal spacing'}</option>`).join('');$('#ls').value=S.ls;
+ $('#cs').innerHTML=Object.entries(CASES).map(([v,l])=>`<option value="${v}">${l}</option>`).join('');$('#cs').value=S.cs;
+ $('#uni').innerHTML=Object.entries(UNIS).map(([v,l])=>`<option value="${v}">${l} ${v?uni('Abc',v):''}</option>`).join('');$('#uni').value=S.uni;
+ ['ls','cs','uni'].forEach(k=>$('#'+k).onchange=e=>{S[k]=k=='ls'?+e.target.value:e.target.value;render()});
  $('#font').onchange=e=>{S.font=e.target.value;render()};$('#size').onchange=e=>{S.size=e.target.value;render()};
- $('#add').onclick=()=>{S.stops.push(r2h([Math.random()*255,Math.random()*255,Math.random()*255]));drawStops();render()};
- $('#rev').onclick=()=>{S.stops.reverse();drawStops();render()};
+ $('#add').onclick=()=>{S.pos=[];S.stops.push(r2h([Math.random()*255,Math.random()*255,Math.random()*255]));drawStops();render()};
+ $('#rev').onclick=()=>{S.stops.reverse();S.pos=[];drawStops();render()};
  $('#reroll').onclick=()=>{S.seed=Math.floor(Math.random()*1e9);render()};
- const cp=(txt,b,l)=>navigator.clipboard.writeText(txt).then(()=>{b.textContent='Copied!';setTimeout(()=>b.textContent=l,1200)});
- $('#copy').onclick=e=>cp($('#out').value,e.target,'Copy code');$('#share').onclick=e=>cp(location.href,e.target,'Copy share link');
- $('#theme').onclick=()=>{const d=document.documentElement;d.dataset.theme=d.dataset.theme=='dark'?'light':'dark'};
+ const cp2=(txt,b)=>navigator.clipboard.writeText(txt).then(()=>{const o=b.innerHTML;b.innerHTML=ic('check')+'Copied!';setTimeout(()=>b.innerHTML=o,1200)});
+ $('#copy').onclick=e=>cp2($('#out').value,e.currentTarget);$('#share').onclick=e=>cp2(location.href,e.currentTarget);
+ $('#theme').onclick=()=>{const d=document.documentElement;d.dataset.theme=d.dataset.theme=='dark'?'light':'dark';tIcon()};
+ const tIcon=()=>$('#theme').innerHTML=ic(document.documentElement.dataset.theme=='dark'?'sun':'moon');
  if(matchMedia('(prefers-color-scheme:dark)').matches)document.documentElement.dataset.theme='dark';
+ tIcon();document.querySelectorAll('[data-ic]').forEach(e=>e.innerHTML=ic(e.dataset.ic));
+ $('#rep').value=S.rep;$('#rep').oninput=e=>{S.rep=Math.max(1,Math.min(12,+e.target.value||1));render()};
+ [['h','a_h'],['sa','a_sa'],['li','a_li']].forEach(([k,id])=>{const el=$('#'+id);el.value=S[k];el.oninput=()=>{S[k]=+el.value;render()}});
+ $('#rst').onclick=()=>{S.h=S.sa=S.li=0;['a_h','a_sa','a_li'].forEach(id=>$('#'+id).value=0);render()};
+ $('#harm').onclick=e=>{const b=e.target.closest('button');if(!b)return;const[H,s,l]=r2hsl(S.stops[0]),m={comp:[0,180],ana:[-30,0,30],tri:[0,120,240]}[b.dataset.h];
+  S.stops=m?m.map(o=>hsl(H+o,s,l)):(()=>{const b0=Math.random()*360,st=20+Math.random()*40;return Array.from({length:4},(_,i)=>hsl(b0+i*st,.65+Math.random()*.3,.45+Math.random()*.15))})();
+  S.pos=[];if(!['gradient','mirror','alt','wave','line'].includes(S.effect)){S.effect='gradient';chips('#effects','fx',EFFECTS,'effect')}drawStops();render()};
+ $('#rich').onclick=async e=>{const t=e.currentTarget,o=t.innerHTML,v=`<div style="${styleCss()}">${$('#inner').innerHTML}</div>`;try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([v],{type:'text/html'}),'text/plain':new Blob([S.text],{type:'text/plain'})})]);t.innerHTML=ic('check')+'Copied!'}catch(x){t.textContent='Not supported'}setTimeout(()=>t.innerHTML=o,1400)};
  drawStops();render()}
 init();
 </script>
