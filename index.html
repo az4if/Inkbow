@@ -72,10 +72,25 @@ button:active{transform:translateY(1px)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .stage{min-height:180px}
 footer{border-top:1px solid var(--line);margin-top:8px;padding-top:16px}
+.hbtns{display:flex;gap:8px;align-items:center}
+.kbd{margin-top:6px;font-size:.8rem}
+kbd{font:600 .75rem 'JetBrains Mono',monospace;background:var(--code);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+@media(max-width:860px){
+ main{gap:12px;padding:12px}main>section{display:contents}.card{margin-bottom:0}
+ #pv{order:-1;position:sticky;top:6px;z-index:5;padding:10px 12px}
+ #pv h2{display:none}#pv .stage{min-height:70px;max-height:22vh;font-size:1.4rem;padding:10px}
+ #pv .chips{margin-top:8px!important}}
+@media(max-width:560px){
+ header{padding:12px 12px 0}.tag{display:none}h1{font-size:1.25rem}.logo svg{width:32px;height:32px}
+ .card{padding:14px}.grid2{grid-template-columns:1fr}
+ button,.chips span{padding:8px 13px}
+ .stop{flex-wrap:wrap}.stop input[type=text]{flex:1;min-width:90px}
+ .presets button{width:calc(25% - 6px);height:30px}.rng{grid-template-columns:84px 1fr 34px}
+ #out{min-height:120px}.row{gap:8px}footer{padding:14px 12px 24px}}
 </style>
 </head>
 <body>
-<header><div class="logo"><svg width="38" height="38" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg"><stop offset="0" stop-color="#FF512F"/><stop offset=".5" stop-color="#DD2476"/><stop offset="1" stop-color="#5B3DF5"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lg)"/><circle cx="32" cy="18" r="5" fill="#fff"/><rect x="27.5" y="27" width="9" height="22" rx="4.5" fill="#fff"/></svg><div><h1 class="brand">Inkbow</h1><div class="tag">Paint your text with color</div></div></div><button id="theme" aria-label="Toggle theme"></button></header>
+<header><div class="logo"><svg width="38" height="38" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg"><stop offset="0" stop-color="#FF512F"/><stop offset=".5" stop-color="#DD2476"/><stop offset="1" stop-color="#5B3DF5"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lg)"/><circle cx="32" cy="18" r="5" fill="#fff"/><rect x="27.5" y="27" width="9" height="22" rx="4.5" fill="#fff"/></svg><div><h1 class="brand">Inkbow</h1><div class="tag">Paint your text with color</div></div></div><div class="hbtns"><button id="surprise" class="p" title="Alt+R"><i data-ic="dice"></i>Surprise me</button><button id="theme" aria-label="Toggle theme"></button></div></header>
 <main>
 <section>
   <div class="card"><h2><i data-ic="pen"></i>Your text</h2><textarea id="text" spellcheck="false"></textarea>
@@ -94,19 +109,19 @@ footer{border-top:1px solid var(--line);margin-top:8px;padding-top:16px}
     <button id="rst"><i data-ic="swap"></i>Reset</button></div>
 </section>
 <section class="sticky">
-  <div class="card"><h2><i data-ic="eye"></i>Preview</h2><div class="stage" id="stage"></div>
+  <div class="card" id="pv"><h2><i data-ic="eye"></i>Preview</h2><div class="stage" id="stage"></div>
     <div class="chips" style="margin-top:10px" id="bgs"></div></div>
   <div class="card"><h2><i data-ic="code"></i>Code</h2><div class="chips tabs" id="fmts"></div>
     <textarea id="out" readonly aria-label="Generated code"></textarea>
-    <div class="row"><button class="p" id="copy"><i data-ic="copy"></i>Copy code</button><button id="rich"><i data-ic="clip"></i>Copy rich text</button><button id="share"><i data-ic="share"></i>Copy share link</button><span class="meta" id="meta"></span></div></div>
+    <div class="row"><button class="p" id="copy"><i data-ic="copy"></i>Copy code</button><button id="rich"><i data-ic="clip"></i>Copy rich text</button><button id="png"><i data-ic="download"></i>Save PNG</button><button id="pngc"><i data-ic="image"></i>Copy image</button><button id="share"><i data-ic="share"></i>Copy share link</button><span class="meta" id="meta"></span></div></div>
 </section>
 </main>
-<footer>Made by <b>AziF</b> · MIT licensed · Inkbow turns plain text into colored text for forums, sites, terminals and games.</footer>
+<footer>Made by <b>AziF</b> · MIT licensed · Inkbow turns plain text into colored text for forums, sites, terminals and games.<div class="kbd">Shortcuts: <kbd>Ctrl</kbd>+<kbd>Enter</kbd> copy code · <kbd>Alt</kbd>+<kbd>R</kbd> surprise me · <kbd>Alt</kbd>+<kbd>P</kbd> save PNG</div></footer>
 <script>
 const $=s=>document.querySelector(s);
 const EFFECTS={gradient:'Gradient',mirror:'Middle gradient',wave:'Repeating wave',alt:'Alternating',line:'Per line',solid:'Solid',random:'Random',rainbow:'Rainbow'};
-const FORMATS={bbcode:'BBCode',html:'HTML span',font:'HTML font tag',css:'CSS gradient',unity:'Unity / TMP',mini:'MiniMessage',minigrad:'MiniMessage gradient',mc:'Minecraft &#hex',mcjson:'Minecraft JSON',discord:'Discord ANSI',ansi:'ANSI terminal',latex:'LaTeX'};
-const ICONS={pen:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',sparkles:'<path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/>',type:'<polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/>',sliders:'<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',code:'<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',clip:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>',plus:'<path d="M12 5v14M5 12h14"/>',shuffle:'<path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',swap:'<path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/>',x:'<path d="M18 6 6 18M6 6l12 12"/>',check:'<path d="M20 6 9 17l-5-5"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/>',pipette:'<path d="m2 22 1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3z"/>'};
+const FORMATS={bbcode:'BBCode',html:'HTML span',font:'HTML font tag',css:'CSS gradient',unity:'Unity / TMP',mini:'MiniMessage',minigrad:'MiniMessage gradient',mc:'Minecraft &#hex',mcjson:'Minecraft JSON',discord:'Discord ANSI',irc:'mIRC / IRC',slack:'Slack mrkdwn',ansi:'ANSI terminal',latex:'LaTeX'};
+const ICONS={dice:'<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1"/><circle cx="15.5" cy="8.5" r="1"/><circle cx="8.5" cy="15.5" r="1"/><circle cx="15.5" cy="15.5" r="1"/><circle cx="12" cy="12" r="1"/>',image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>',download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',pen:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',sparkles:'<path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/>',type:'<polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/>',sliders:'<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',code:'<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',clip:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>',plus:'<path d="M12 5v14M5 12h14"/>',shuffle:'<path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',swap:'<path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/>',x:'<path d="M18 6 6 18M6 6l12 12"/>',check:'<path d="M20 6 9 17l-5-5"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/>',pipette:'<path d="m2 22 1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3z"/>'};
 const ic=n=>`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
 const CASES={'':'Normal case',upper:'UPPERCASE',lower:'lowercase',title:'Title Case',alt:'aLtErNaTiNg',rev:'Reversed'};
 const UNIS={'':'Normal font',bold:'Bold',italic:'Italic',bolditalic:'Bold italic',script:'Script',boldscript:'Bold script',fraktur:'Fraktur',double:'Double-struck',sans:'Sans',sansbold:'Sans bold',sansitalic:'Sans italic',mono:'Monospace',circled:'Circled',wide:'Wide',smallcaps:'Small caps'};
@@ -121,6 +136,9 @@ function uni(s,k){if(!k)return s;return Array.from(s).map(c=>{const o=c.charCode
 const cas=(s,k)=>k=='upper'?s.toUpperCase():k=='lower'?s.toLowerCase():k=='title'?s.toLowerCase().replace(/(^|\s)\S/g,m=>m.toUpperCase()):k=='alt'?Array.from(s).map((c,i)=>i%2?c.toLowerCase():c.toUpperCase()).join(''):k=='rev'?Array.from(s).reverse().join(''):s;
 const txt=()=>{let s=uni(cas(S.text,S.cs),S.uni);if(S.sp)s=Array.from(s).map(c=>/\s/.test(c)?c:c+'\u2009').join('');return s};
 const SMOOTH=['gradient','mirror','rainbow','wave'],HT=[['s','<s>','</s>'],['u','<u>','</u>'],['i','<i>','</i>'],['b','<b>','</b>']];
+const IRCP=('ffffff 000000 00007f 009300 ff0000 7f0000 9c009c fc7f00 ffff00 00fc00 009393 00ffff 0000fc ff00ff 7f7f7f d2d2d2 470000 472100 474700 324700 004700 00472c 004747 002747 000047 2e0047 470047 47002a 740000 743a00 747400 517400 007400 007449 007474 004074 000074 4b0074 740074 740045 b50000 b56300 b5b500 7db500 00b500 00b571 00b5b5 0063b5 0000b5 7500b5 b500b5 b5006b ff0000 ff8c00 ffff00 b2ff00 00ff00 00ffa0 00ffff 008cff 0000ff a500ff ff00ff ff0098 ff5959 ffb459 ffff71 cfff60 6fff6f 65ffc9 6dffff 59b4ff 5959ff c459ff ff66ff ff59bc ff9c9c ffd39c ffff9c e2ff9c 9cff9c 9cffdb 9cffff 9cd3ff 9c9cff dc9cff ff9cff ff94d3 000000 131313 282828 363636 4d4d4d 656565 818181 9f9f9f bcbcbc e2e2e2 ffffff').split(' ').map(x=>'#'+x);
+const NOTES={irc:' · needs an IRC client with 99-color support',slack:' · Slack has no text colors: use bold/italic + a Unicode font',discord:' · paste inside a Discord message'};
+const mirc=c=>{const a=h2r(c);let b=0,d=1e9;IRCP.forEach((x,i)=>{const q=h2r(x),e=(a[0]-q[0])**2+(a[1]-q[1])**2+(a[2]-q[2])**2;if(e<d){d=e;b=i}});return b};
 const DC=[['30','#4F545C'],['31','#DC322F'],['32','#859900'],['33','#B58900'],['34','#268BD2'],['35','#D33682'],['36','#2AA198'],['37','#FFFFFF']];
 const FONTS=['','Arial','Verdana','Georgia','Times New Roman','Courier New','Trebuchet MS','Comic Sans MS','Impact'];
 const SIZES=['','12','16','24','32','48','64'];
@@ -174,6 +192,8 @@ function gen(r){
  if(f=='latex')return wr(r.map(x=>{const t=lx(x.t);return x.c?`\\textcolor[HTML]{${x.c.slice(1)}}{${t}}`:t}).join(''),[['s','\\sout{','}'],['u','\\underline{','}'],['i','\\textit{','}'],['b','\\textbf{','}']]);
  if(f=='mcjson')return JSON.stringify(['',...r.filter(x=>x.t).map(x=>{const o={text:x.t};if(x.c)o.color=x.c.toLowerCase();if(S.b)o.bold=true;if(S.i)o.italic=true;if(S.u)o.underlined=true;if(S.s)o.strikethrough=true;return o})]);
  if(f=='discord')return '```ansi\n'+r.map(x=>x.c?`\x1b[${S.b?'1;':''}${S.u?'4;':''}${near(x.c)}m${x.t}`:x.t).join('')+'\x1b[0m\n```';
+ if(f=='irc')return (S.b?'\x02':'')+(S.i?'\x1D':'')+(S.u?'\x1F':'')+(S.s?'\x1E':'')+r.map(x=>x.c?`\x03${String(mirc(x.c)).padStart(2,'0')}${x.t}`:x.t).join('')+'\x0F';
+ if(f=='slack'){let o=txt();if(S.s)o=`~${o}~`;if(S.i)o=`_${o}_`;if(S.b)o=`*${o}*`;return o}
  if(f=='css'){if(!SMOOTH.includes(S.effect))return'/* The CSS gradient export needs a smooth effect: Gradient, Middle gradient, Repeating wave or Rainbow. */';
   const pts=Array.from({length:33},(_,i)=>rampAt(i/32));
   return `<span style="background:linear-gradient(90deg,${pts.join(',')});-webkit-background-clip:text;background-clip:text;color:transparent;${styleCss()}">${esc(txt()).replace(/\n/g,'<br>')}</span>`}
@@ -183,7 +203,7 @@ function render(){
  const r=runs();$('#out').value=gen(r);
  $('#stage').innerHTML='<div id="inner">'+(r.map(x=>{const t=esc(x.t);return x.c?`<span style="color:${x.c}${S.g?`;text-shadow:0 0 .35em ${x.c}`:''}">${t}</span>`:t}).join('')||'<span style="opacity:.4">Type something…</span>')+'</div>';
  $('#inner').style.cssText=styleCss();$('#stage').className='stage '+(S.bg=='auto'?'':S.bg);
- $('#meta').textContent=`${Array.from(S.text).length} chars · ${$('#out').value.length} code chars`;
+ $('#meta').textContent=`${Array.from(S.text).length} chars · ${$('#out').value.length} code chars`+(NOTES[S.fmt]||'');
  $('#stopsBox').classList.toggle('hide',['random','rainbow'].includes(S.effect));
  $('#rerollBox').classList.toggle('hide',S.effect!='random');
  $('#add').classList.toggle('hide',S.effect=='solid');
@@ -201,6 +221,13 @@ function drawStops(){const p=posOf(),q=$('#stops');
  q.querySelectorAll('[data-p]').forEach(el=>el.oninput=()=>{if(S.pos.length!=S.stops.length)S.pos=posOf();S.pos[el.dataset.p]=Math.max(0,Math.min(100,+el.value||0))/100;render()});
  q.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{S.stops.splice(b.dataset.x,1);S.pos=[];drawStops();render()});
  q.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>new EyeDropper().open().then(r=>{S.stops[b.dataset.e]=r.sRGBHex.toUpperCase();drawStops();render()}).catch(()=>{}))}
+function png(){return new Promise(res=>{const base=+S.size||64,sc=2,pad=24,fam=S.font?`"${S.font}",sans-serif`:'"Bricolage Grotesque",system-ui,sans-serif',f=`${S.i?'italic ':''}${S.b?'bold ':''}${base*sc}px ${fam}`,ls=(+S.ls||0)*sc,cv=document.createElement('canvas'),x=cv.getContext('2d');x.font=f;
+ const L=[[]];runs().forEach(r=>Array.from(r.t).forEach(ch=>{if(ch=='\n')L.push([]);else L[L.length-1].push([ch,r.c])}));
+ const w=L.map(l=>l.reduce((a,[ch])=>a+x.measureText(ch).width+ls,0)),lh=base*sc*1.3;
+ cv.width=Math.ceil(Math.max(...w,10)+pad*2*sc);cv.height=Math.ceil(L.length*lh+pad*2*sc);
+ const bg={light:'#FFFFFF',dark:'#0B0A17'}[S.bg];x.font=f;x.textBaseline='middle';if(bg){x.fillStyle=bg;x.fillRect(0,0,cv.width,cv.height)}
+ L.forEach((l,i)=>{let px=(cv.width-w[i])/2;const y=pad*sc+lh*i+lh/2;l.forEach(([ch,c])=>{const cw=x.measureText(ch).width;if(c){x.fillStyle=c;x.shadowColor=S.g?c:'transparent';x.shadowBlur=S.g?base*sc*.35:0;x.fillText(ch,px,y);x.shadowBlur=0;if(S.u)x.fillRect(px,y+base*sc*.38,cw+ls,base*sc*.06);if(S.s)x.fillRect(px,y-base*sc*.05,cw+ls,base*sc*.06)}px+=cw+ls})});
+ cv.toBlob(res)})}
 function init(){
  try{Object.assign(S,JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(1))))))}catch(e){}
  $('#text').value=S.text;$('#perWord').checked=S.perWord;$('#opt').checked=S.opt;
@@ -234,6 +261,13 @@ function init(){
   S.stops=m?m.map(o=>hsl(H+o,s,l)):(()=>{const b0=Math.random()*360,st=20+Math.random()*40;return Array.from({length:4},(_,i)=>hsl(b0+i*st,.65+Math.random()*.3,.45+Math.random()*.15))})();
   S.pos=[];if(!['gradient','mirror','alt','wave','line'].includes(S.effect)){S.effect='gradient';chips('#effects','fx',EFFECTS,'effect')}drawStops();render()};
  $('#rich').onclick=async e=>{const t=e.currentTarget,o=t.innerHTML,v=`<div style="${styleCss()}">${$('#inner').innerHTML}</div>`;try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([v],{type:'text/html'}),'text/plain':new Blob([S.text],{type:'text/plain'})})]);t.innerHTML=ic('check')+'Copied!'}catch(x){t.textContent='Not supported'}setTimeout(()=>t.innerHTML=o,1400)};
+const flash=(b,t,i='check')=>{const o=b.innerHTML;b.innerHTML=ic(i)+t;setTimeout(()=>b.innerHTML=o,1400)};
+ $('#png').onclick=async e=>{const t=e.currentTarget,b=await png(),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='inkbow.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);flash(t,'Saved!')};
+ $('#pngc').onclick=async e=>{const t=e.currentTarget;try{await navigator.clipboard.write([new ClipboardItem({'image/png':png()})]);flash(t,'Copied!')}catch(x){flash(t,'Not supported','x')}};
+ const pk=a=>a[Math.floor(Math.random()*a.length)];
+ $('#surprise').onclick=()=>{S.effect=pk(Object.keys(EFFECTS).filter(k=>k!='solid'));S.stops=[...PRESETS[pk(Object.keys(PRESETS))]];S.pos=[];S.uni=pk(Object.keys(UNIS));S.seed=Math.floor(Math.random()*1e9);S.rep=2+Math.floor(Math.random()*4);
+  chips('#effects','fx',EFFECTS,'effect');$('#uni').value=S.uni;$('#rep').value=S.rep;drawStops();render()};
+ document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key=='Enter'){e.preventDefault();$('#copy').click()}else if(e.altKey&&e.code=='KeyR'){e.preventDefault();$('#surprise').click()}else if(e.altKey&&e.code=='KeyP'){e.preventDefault();$('#png').click()}});
  drawStops();render()}
 init();
 </script>
